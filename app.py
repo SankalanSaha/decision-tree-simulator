@@ -10,6 +10,15 @@ import plotly.graph_objects as go
 import streamlit as st
 import streamlit.components.v1 as components
 
+from pathlib import Path   # add near the top with the other imports
+
+DOCS_DIR = Path(__file__).parent / "docs"
+DOC_FILES = [
+    ("Documentation (PDF)", "decision_tree_simulator.pdf", "application/pdf"),
+    ("Documentation (Word)", "decision_tree_simulator.docx",
+     "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+]
+
 st.set_page_config(
     page_title="Decision Tree Simulator",
     layout="wide",
@@ -417,6 +426,17 @@ def accuracy(a, b):
 
 # Sidebar
 with st.sidebar:
+
+    available = [(label, fname, mime) for label, fname, mime in DOC_FILES
+                 if (DOCS_DIR / fname).exists()]
+
+    if available:
+        st.markdown("## Documentation")
+        for label, fname, mime in available:
+            st.download_button(label, (DOCS_DIR / fname).read_bytes(),
+                               file_name=fname, mime=mime, key=f"dl_{fname}")
+        st.divider()
+
     st.markdown("## Controls")
     st.markdown("##### 1 · Data")
     source = st.selectbox("Dataset", ["Iris", "Wine", "Breast cancer", "Digits (64 features)",
